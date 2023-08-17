@@ -8,13 +8,14 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
+
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({ title, price, imageUrl, description })
-    .then((data) => {
+  req.user.createProduct({ title, price, imageUrl, description,userId:req.user.id })
+  .then((data) => {
       console.log("data add  success");
     })
     .catch((err) => {
@@ -83,7 +84,6 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .then(() => {
       console.log("deleted product");
-      res.redirect("admin/products");
+      res.redirect("/admin/products");
     });
-  res.redirect("/admin/products");
 };
