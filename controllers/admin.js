@@ -8,14 +8,14 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
-
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  req.user.createProduct({ title, price, imageUrl, description,userId:req.user.id })
-  .then((data) => {
+  req.user
+    .createProduct({ title, price, imageUrl, description, userId: req.user.id })
+    .then((data) => {
       console.log("data add  success");
     })
     .catch((err) => {
@@ -29,7 +29,8 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findByPk(prodId).then((product) => {
+  req.user.getProducts({ where: { id: prodId } }).then((product) => {
+    console.log("inside", product);
     if (!product) {
       return res.redirect("/");
     }
@@ -38,7 +39,7 @@ exports.getEditProduct = (req, res, next) => {
       pageTitle: "Edit Product",
       path: "/admin/edit-product",
       editing: editMode,
-      product: product,
+      product: product[0],
     });
   });
 };
@@ -67,7 +68,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll().then((products) => {
+
+  req.user.getProducts().then((products) => {
     res.render("admin/products", {
       prods: products,
       pageTitle: "Admin Products",
